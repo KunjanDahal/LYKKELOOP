@@ -4,6 +4,10 @@ import User from "@/models/User";
 import bcrypt from "bcrypt";
 import { generateToken, getAuthCookieOptions } from "@/lib/auth";
 
+// Mark route as dynamic and use Node.js runtime
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function POST(request: NextRequest) {
   try {
     await connectDB();

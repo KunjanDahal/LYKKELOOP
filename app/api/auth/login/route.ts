@@ -4,8 +4,9 @@ import User from "@/models/User";
 import bcrypt from "bcrypt";
 import { generateToken, getAuthCookieOptions } from "@/lib/auth";
 
-// Mark route as dynamic
+// Mark route as dynamic and use Node.js runtime (required for MongoDB and bcrypt)
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 // Handle CORS preflight requests
 export async function OPTIONS() {
