@@ -25,6 +25,15 @@ export async function POST(request: NextRequest) {
   console.log('[LOGIN API] POST request received');
   
   try {
+    // Check if MONGODB_URI is set
+    if (!process.env.MONGODB_URI) {
+      console.error('[LOGIN API] MONGODB_URI is not set');
+      return NextResponse.json(
+        { error: "Server configuration error. Please contact support." },
+        { status: 500 }
+      );
+    }
+
     await connectDB();
     console.log('[LOGIN API] Database connected');
 
