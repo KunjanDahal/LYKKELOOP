@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
 
@@ -11,6 +11,7 @@ interface AuthFormProps {
 
 export default function AuthForm({ type }: AuthFormProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { login, signup } = useAuth();
   const { showToast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,8 +70,10 @@ export default function AuthForm({ type }: AuthFormProps) {
       if (type === "login") {
         await login(formData.email, formData.password);
         showToast("Login successful! Welcome back.", "success");
+        const redirectTo = searchParams.get("redirect") || "/";
+        // Use window.location for full page reload to ensure cookie is available
         setTimeout(() => {
-          router.push("/");
+          window.location.href = redirectTo;
         }, 500);
       } else {
         await signup(formData.name, formData.email, formData.password);

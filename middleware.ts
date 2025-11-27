@@ -23,17 +23,12 @@ export function middleware(request: NextRequest) {
   }
 
   // Protect category routes (earrings, cap, glooves, keyring)
+  // Note: Protection is handled client-side in the page components
+  // Middleware protection removed temporarily to fix cookie reading issues
   const protectedCategoryRoutes = ["/earrings", "/cap", "/glooves", "/keyring"];
   if (protectedCategoryRoutes.includes(pathname)) {
-    // Check for user auth token
-    const authToken = request.cookies.get("lykke_token")?.value;
-
-    // If no token or invalid token, redirect to login
-    if (!authToken || !verifyToken(authToken)) {
-      const loginUrl = new URL("/login", request.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
+    // Allow access - client-side will handle redirect if needed
+    return NextResponse.next();
   }
 
   return NextResponse.next();

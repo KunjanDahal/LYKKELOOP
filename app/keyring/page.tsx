@@ -16,7 +16,7 @@ export default function KeyringPage() {
   const [products, setProducts] = useState<DbProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Redirect to login if not authenticated
+  // Redirect to login if not authenticated (only after auth check is complete)
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login?redirect=/keyring");
@@ -25,12 +25,14 @@ export default function KeyringPage() {
 
   useEffect(() => {
     // Only fetch products if user is authenticated
-    if (!user) return;
+    if (!user || authLoading) return;
 
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/api/products?type=keyring");
+        const response = await fetch("/api/products?type=keyring", {
+          credentials: "include",
+        });
         const data = await response.json();
         if (response.ok) {
           setProducts(data);
@@ -43,10 +45,10 @@ export default function KeyringPage() {
     };
 
     fetchProducts();
-  }, [user]);
+  }, [user, authLoading]);
 
-  // Show loading or nothing while checking auth
-  if (authLoading || !user) {
+  // Show loading while checking auth
+  if (authLoading) {
     return (
       <main className="min-h-screen">
         <Navbar />
@@ -55,6 +57,11 @@ export default function KeyringPage() {
         </div>
       </main>
     );
+  }
+
+  // Don't render content if not authenticated (will redirect)
+  if (!user) {
+    return null;
   }
 
   return (

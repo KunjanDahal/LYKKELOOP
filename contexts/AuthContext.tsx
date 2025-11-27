@@ -27,7 +27,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = async () => {
     try {
-      const response = await fetch("/api/auth/me");
+      const response = await fetch("/api/auth/me", {
+        credentials: "include",
+      });
       const data = await response.json();
       setUser(data.user);
     } catch (error) {
@@ -47,6 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
     const data = await response.json();
@@ -63,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password }),
+      credentials: "include",
     });
 
     const data = await response.json();
@@ -77,6 +81,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const logout = async () => {
     await fetch("/api/auth/logout", {
       method: "POST",
+      credentials: "include",
     });
     setUser(null);
   };
@@ -86,6 +91,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name }),
+      credentials: "include",
     });
 
     const data = await response.json();
@@ -106,6 +112,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ oldPassword, newPassword, confirmNewPassword }),
+      credentials: "include",
     });
 
     const data = await response.json();
