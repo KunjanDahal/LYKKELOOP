@@ -4,11 +4,33 @@ import User from "@/models/User";
 import bcrypt from "bcrypt";
 import { generateToken, getAuthCookieOptions } from "@/lib/auth";
 
+// Handle CORS preflight requests
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}
+
 export async function POST(request: NextRequest) {
   try {
     await connectDB();
 
-    const body = await request.json();
+    // Parse request body
+    let body;
+    try {
+      body = await request.json();
+    } catch (parseError) {
+      return NextResponse.json(
+        { error: "Invalid request body. Expected JSON." },
+        { status: 400 }
+      );
+    }
+
     const { email, password } = body;
 
     // Validation
@@ -67,5 +89,13 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Handle unsupported methods
+export async function GET() {
+  return NextResponse.json(
+    { error: "Method not allowed. Use POST." },
+    { status: 405 }
+  );
 }
 
