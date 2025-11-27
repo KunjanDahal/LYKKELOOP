@@ -52,10 +52,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       credentials: "include",
     });
 
-    const data = await response.json();
+    // Check if response has content before parsing
+    const contentType = response.headers.get("content-type");
+    let data;
+    
+    if (contentType && contentType.includes("application/json")) {
+      const text = await response.text();
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          throw new Error("Invalid response from server");
+        }
+      } else {
+        data = {};
+      }
+    } else {
+      data = {};
+    }
 
     if (!response.ok) {
-      throw new Error(data.error || "Login failed");
+      throw new Error(data.error || `Login failed (${response.status})`);
     }
 
     setUser(data.user);

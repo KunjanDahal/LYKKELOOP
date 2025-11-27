@@ -4,6 +4,9 @@ import User from "@/models/User";
 import bcrypt from "bcrypt";
 import { generateToken, getAuthCookieOptions } from "@/lib/auth";
 
+// Mark route as dynamic
+export const dynamic = 'force-dynamic';
+
 // Handle CORS preflight requests
 export async function OPTIONS() {
   return new NextResponse(null, {
