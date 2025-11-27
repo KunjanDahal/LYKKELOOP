@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import jwt from "jsonwebtoken";
+import jwt, { SignOptions } from "jsonwebtoken";
 import { cookies } from "next/headers";
 
 const JWT_SECRET = process.env.JWT_SECRET || "lykkeloop_secret_key_change_in_production_2024";
@@ -12,7 +12,7 @@ export interface JWTPayload {
 export function generateToken(payload: JWTPayload): string {
   return jwt.sign(payload, JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN || "7d",
-  });
+  } as SignOptions);
 }
 
 export function verifyToken(token: string): JWTPayload | null {

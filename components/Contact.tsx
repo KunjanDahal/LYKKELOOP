@@ -7,7 +7,7 @@ export default function Contact() {
             Get in Touch
           </h2>
           <p className="text-lg text-brown/80">
-            Have a question or need help? We'd love to hear from you!
+            Have a question or need help? We&apos;d love to hear from you!
           </p>
           <div className="pt-8 space-y-4">
             <div>

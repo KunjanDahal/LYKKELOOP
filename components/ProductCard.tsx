@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Product, DbProduct } from "@/types";
 
 interface ProductCardProps {
@@ -24,13 +25,15 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
       onClick={onProductClick}
       className="bg-white rounded-2xl p-6 border border-brown/10 hover:shadow-xl transition-all hover:scale-105 cursor-pointer group"
     >
-      <div className="aspect-square bg-beige rounded-xl mb-4 flex items-center justify-center overflow-hidden">
+      <div className="aspect-square bg-beige rounded-xl mb-4 flex items-center justify-center overflow-hidden relative">
         {productImage && !imageError ? (
-          <img
+          <Image
             src={productImage}
             alt={productName}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+            fill
+            className="object-cover group-hover:scale-110 transition-transform"
             onError={() => setImageError(true)}
+            unoptimized
           />
         ) : (
           <div className="w-24 h-24 border-2 border-brown/30 rounded-full group-hover:scale-110 transition-transform"></div>
