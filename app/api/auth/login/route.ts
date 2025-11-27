@@ -8,6 +8,9 @@ import { generateToken, getAuthCookieOptions } from "@/lib/auth";
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 
+// Ensure this is a route handler
+export const maxDuration = 30;
+
 // Handle CORS preflight requests
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -109,11 +112,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Handle unsupported methods
+// Handle unsupported methods - return 405 for methods other than POST and OPTIONS
 export async function GET() {
-  return NextResponse.json(
-    { error: "Method not allowed. Use POST." },
-    { status: 405 }
+  return new NextResponse(
+    JSON.stringify({ error: "Method not allowed. Use POST." }),
+    {
+      status: 405,
+      headers: { "Content-Type": "application/json" },
+    }
   );
 }
 
