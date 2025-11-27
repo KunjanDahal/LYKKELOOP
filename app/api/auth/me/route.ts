@@ -3,8 +3,18 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { getAuthUser } from "@/lib/auth";
 
+// Mark route as dynamic and use Node.js runtime
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 export async function GET() {
   try {
+    // Check if MONGODB_URI is set
+    if (!process.env.MONGODB_URI) {
+      console.error('[AUTH ME] MONGODB_URI is not set');
+      return NextResponse.json({ user: null }, { status: 200 });
+    }
+
     const authUser = await getAuthUser();
 
     if (!authUser) {

@@ -30,6 +30,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const response = await fetch("/api/auth/me", {
         credentials: "include",
       });
+      
+      // Check if response is ok before parsing
+      if (!response.ok) {
+        console.error("Failed to fetch user:", response.status);
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+
       const data = await response.json();
       setUser(data.user);
     } catch (error) {
