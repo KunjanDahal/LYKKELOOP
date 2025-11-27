@@ -21,8 +21,12 @@ export async function OPTIONS() {
 }
 
 export async function POST(request: NextRequest) {
+  // Log that the route is being hit
+  console.log('[LOGIN API] POST request received');
+  
   try {
     await connectDB();
+    console.log('[LOGIN API] Database connected');
 
     // Parse request body
     let body;
@@ -36,6 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     const { email, password } = body;
+    console.log('[LOGIN API] Request body received:', { email: email ? 'present' : 'missing', password: password ? 'present' : 'missing' });
 
     // Validation
     if (!email || !password) {
