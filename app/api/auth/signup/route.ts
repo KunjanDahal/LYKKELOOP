@@ -4,9 +4,22 @@ import User from "@/models/User";
 import bcrypt from "bcrypt";
 import { generateToken, getAuthCookieOptions } from "@/lib/auth";
 
-// Mark route as dynamic and use Node.js runtime
+// Mark route as dynamic and use Node.js runtime (required for MongoDB and bcrypt)
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+export const maxDuration = 30;
+
+// Handle CORS preflight requests
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 200,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    },
+  });
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -87,5 +100,16 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Handle unsupported methods - return 405 for methods other than POST and OPTIONS
+export async function GET() {
+  return new NextResponse(
+    JSON.stringify({ error: "Method not allowed. Use POST." }),
+    {
+      status: 405,
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 }
 
