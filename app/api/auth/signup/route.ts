@@ -9,6 +9,9 @@ export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 30;
 
+// Route segment config for Vercel
+export const preferredRegion = 'auto';
+
 // Handle CORS preflight requests
 export async function OPTIONS() {
   return new NextResponse(null, {
@@ -22,8 +25,20 @@ export async function OPTIONS() {
 }
 
 export async function POST(request: NextRequest) {
+  console.log('[SIGNUP API] POST request received');
+  
   try {
+    // Check if MONGODB_URI is set
+    if (!process.env.MONGODB_URI) {
+      console.error('[SIGNUP API] MONGODB_URI is not set');
+      return NextResponse.json(
+        { error: "Server configuration error. Please contact support." },
+        { status: 500 }
+      );
+    }
+
     await connectDB();
+    console.log('[SIGNUP API] Database connected');
 
     const body = await request.json();
     const { name, email, password } = body;
@@ -102,14 +117,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Handle unsupported methods - return 405 for methods other than POST and OPTIONS
+// Handle unsupported methods
 export async function GET() {
-  return new NextResponse(
-    JSON.stringify({ error: "Method not allowed. Use POST." }),
-    {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
-    }
+  return NextResponse.json(
+    { error: "Method not allowed. Use POST." },
+    { status: 405 }
   );
 }
 

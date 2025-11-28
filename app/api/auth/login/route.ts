@@ -7,9 +7,10 @@ import { generateToken, getAuthCookieOptions } from "@/lib/auth";
 // Mark route as dynamic and use Node.js runtime (required for MongoDB and bcrypt)
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
-
-// Ensure this is a route handler
 export const maxDuration = 30;
+
+// Route segment config for Vercel
+export const preferredRegion = 'auto';
 
 // Handle CORS preflight requests
 export async function OPTIONS() {
@@ -112,14 +113,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Handle unsupported methods - return 405 for methods other than POST and OPTIONS
+// Handle unsupported methods
 export async function GET() {
-  return new NextResponse(
-    JSON.stringify({ error: "Method not allowed. Use POST." }),
-    {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
-    }
+  return NextResponse.json(
+    { error: "Method not allowed. Use POST." },
+    { status: 405 }
   );
 }
 
