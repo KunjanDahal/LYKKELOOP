@@ -4,6 +4,11 @@ import User from "@/models/User";
 import bcrypt from "bcrypt";
 import { getAuthUser } from "@/lib/auth";
 
+// Mark route as dynamic and use Node.js runtime (required for MongoDB, bcrypt, and cookies)
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 30;
+
 export async function PATCH(request: NextRequest) {
   try {
     const authUser = await getAuthUser();

@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Product from "@/models/Product";
 
+// Mark route as dynamic and use Node.js runtime (required for MongoDB)
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 30;
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -42,5 +47,6 @@ export async function GET(
     );
   }
 }
+
 
 

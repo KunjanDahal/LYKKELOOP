@@ -11,3 +11,4 @@ export async function GET() {
   return NextResponse.json({ message: "GET works!", timestamp: new Date().toISOString() });
 }
 
+

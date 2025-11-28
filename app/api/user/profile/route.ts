@@ -3,6 +3,11 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { getAuthUser } from "@/lib/auth";
 
+// Mark route as dynamic and use Node.js runtime (required for MongoDB and cookies)
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 30;
+
 export async function PATCH(request: NextRequest) {
   try {
     const authUser = await getAuthUser();

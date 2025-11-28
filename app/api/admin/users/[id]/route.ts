@@ -3,6 +3,11 @@ import connectDB from "@/lib/db";
 import User from "@/models/User";
 import { checkAdminAuth } from "@/lib/adminAuth";
 
+// Mark route as dynamic and use Node.js runtime (required for MongoDB and cookies)
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 30;
+
 // PATCH - Update user (name, optionally email)
 export async function PATCH(
   request: NextRequest,

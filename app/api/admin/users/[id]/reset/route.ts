@@ -4,6 +4,11 @@ import User from "@/models/User";
 import bcrypt from "bcrypt";
 import { checkAdminAuth } from "@/lib/adminAuth";
 
+// Mark route as dynamic and use Node.js runtime (required for MongoDB, bcrypt, and cookies)
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+export const maxDuration = 30;
+
 // POST - Reset user password
 export async function POST(
   request: NextRequest,
