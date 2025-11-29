@@ -35,6 +35,7 @@ export async function GET(
       type: product.type,
       priceDkk: product.priceDkk,
       imageUrl: product.imageUrl,
+      images: product.images || [],
       description: product.description,
     };
 

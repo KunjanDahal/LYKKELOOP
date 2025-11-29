@@ -16,7 +16,8 @@ export interface DbProduct {
   name: string;
   type: ProductType;
   priceDkk: number;
-  imageUrl: string;
+  imageUrl?: string;
+  images?: string[];
   description: string;
   createdAt?: string;
   updatedAt?: string;

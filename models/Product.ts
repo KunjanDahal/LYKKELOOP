@@ -7,7 +7,8 @@ export interface IProduct {
   name: string;
   type: ProductType;
   priceDkk: number;
-  imageUrl: string;
+  imageUrl?: string;
+  images?: string[]; // Base64 encoded images
   description: string;
   createdAt: Date;
   updatedAt: Date;
@@ -35,8 +36,13 @@ const ProductSchema = new Schema<IProduct>(
     },
     imageUrl: {
       type: String,
-      required: [true, "Image URL is required"],
+      required: false,
       trim: true,
+    },
+    images: {
+      type: [String],
+      required: false,
+      default: [],
     },
     description: {
       type: String,
@@ -49,9 +55,21 @@ const ProductSchema = new Schema<IProduct>(
   }
 );
 
+// Custom validator: ensure at least one of imageUrl or images is provided
+ProductSchema.pre('validate', function(next) {
+  if (!this.imageUrl && (!this.images || this.images.length === 0)) {
+    next(new Error('Either imageUrl or images array must be provided'));
+  } else {
+    next();
+  }
+});
+
 // Prevent re-compilation during development
-const Product: Model<IProduct> =
-  mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
+// Delete existing model if it exists to ensure schema changes take effect
+if (mongoose.models.Product) {
+  delete mongoose.models.Product;
+}
+const Product: Model<IProduct> = mongoose.model<IProduct>("Product", ProductSchema);
 
 export default Product;
 

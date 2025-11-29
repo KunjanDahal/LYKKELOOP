@@ -29,6 +29,7 @@ export async function GET(request: NextRequest) {
       type: product.type,
       priceDkk: product.priceDkk,
       imageUrl: product.imageUrl,
+      images: product.images || [],
       description: product.description,
     }));
 

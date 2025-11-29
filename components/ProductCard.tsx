@@ -17,7 +17,18 @@ export default function ProductCard({ product, onProductClick }: ProductCardProp
   const productId = isDbProduct ? product._id : product.id.toString();
   const productName = product.name;
   const productPrice = isDbProduct ? product.priceDkk : product.price;
-  const productImage = isDbProduct ? product.imageUrl : product.image;
+  
+  // Get image from images array (first image) or fallback to imageUrl/image
+  let productImage: string | undefined;
+  if (isDbProduct) {
+    const dbProduct = product as DbProduct;
+    productImage = (dbProduct.images && dbProduct.images.length > 0) 
+      ? dbProduct.images[0] 
+      : dbProduct.imageUrl;
+  } else {
+    productImage = product.image;
+  }
+  
   const productTag = "tag" in product ? product.tag : undefined;
 
   return (

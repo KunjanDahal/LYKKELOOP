@@ -31,6 +31,7 @@ export default function ProductDetailPage() {
   const [product, setProduct] = useState<DbProduct | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -125,16 +126,63 @@ export default function ProductDetailPage() {
         </Link>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-          {/* Product Image */}
-          <div className="aspect-square bg-beige rounded-2xl overflow-hidden">
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800'%3E%3Crect fill='%23f5f5dc' width='800' height='800'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%238B4513' font-size='48'%3ENo Image%3C/text%3E%3C/svg%3E";
-              }}
-            />
+          {/* Product Images */}
+          <div>
+            {/* Main Image */}
+            <div className="aspect-square bg-beige rounded-2xl overflow-hidden mb-4">
+              {(() => {
+                const images: string[] = (product.images && product.images.length > 0) ? product.images : (product.imageUrl ? [product.imageUrl] : []);
+                const mainImage = images[selectedImageIndex] || images[0];
+                
+                return mainImage ? (
+                  <img
+                    src={mainImage}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800'%3E%3Crect fill='%23f5f5dc' width='800' height='800'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%238B4513' font-size='48'%3ENo Image%3C/text%3E%3C/svg%3E";
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-brown/50">
+                    No Image
+                  </div>
+                );
+              })()}
+            </div>
+            
+            {/* Image Thumbnails */}
+            {(() => {
+              const images: string[] = (product.images && product.images.length > 0) ? product.images : (product.imageUrl ? [product.imageUrl] : []);
+              
+              if (images.length > 1) {
+                return (
+                  <div className="flex gap-2 overflow-x-auto pb-2">
+                    {images.map((image: string, index: number) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedImageIndex(index)}
+                        className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 transition-colors ${
+                          selectedImageIndex === index
+                            ? "border-rose ring-2 ring-rose/20"
+                            : "border-brown/20 hover:border-brown/40"
+                        }`}
+                      >
+                        <img
+                          src={image}
+                          alt={`${product.name} view ${index + 1}`}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).style.display = "none";
+                          }}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                );
+              }
+              return null;
+            })()}
           </div>
 
           {/* Product Info */}
