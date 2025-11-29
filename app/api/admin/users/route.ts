@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import User from "@/models/User";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { checkAdminAuth } from "@/lib/adminAuth";
 
-// Mark route as dynamic and use Node.js runtime (required for MongoDB, bcrypt, and cookies)
+// Mark route as dynamic and use Node.js runtime (required for MongoDB, bcryptjs, and cookies)
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
 export const maxDuration = 30;
