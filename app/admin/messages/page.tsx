@@ -60,7 +60,7 @@ function AdminMessagesContent() {
         }
 
         const data = await response.json();
-        const conversationsList = data.conversations || [];
+        const conversationsList: ConversationResponse[] = data.conversations || [];
         setConversations(conversationsList);
 
         // Auto-select first conversation if URL param not set and no selection exists
@@ -68,7 +68,7 @@ function AdminMessagesContent() {
         if (!selectedConversationId && conversationsList.length > 0) {
           const convId = urlConvId || conversationsList[0].id;
           setSelectedConversationId(convId);
-        } else if (urlConvId && conversationsList.some(c => c.id === urlConvId)) {
+        } else if (urlConvId && conversationsList.some((c: ConversationResponse) => c.id === urlConvId)) {
           // If URL has a conversation ID and it exists, select it
           setSelectedConversationId(urlConvId);
         }

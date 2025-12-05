@@ -78,9 +78,9 @@ export async function GET(request: NextRequest) {
       // Group by userId and keep only the most recent conversation per user
       const conversationMap = new Map<string, any>();
       for (const conv of allConversations) {
-        const userId = typeof conv.userId === 'object' 
-          ? conv.userId._id.toString() 
-          : conv.userId.toString();
+        const userId = typeof conv.userId === 'object' && conv.userId !== null
+          ? (conv.userId as any)._id?.toString() || (conv.userId as any).toString()
+          : String(conv.userId);
         
         // If we haven't seen this user yet, or this conversation is more recent, keep it
         if (!conversationMap.has(userId)) {
