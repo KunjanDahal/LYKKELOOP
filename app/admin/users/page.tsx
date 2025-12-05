@@ -242,10 +242,10 @@ export default function AdminUsersPage() {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8">
         <div>
-          <h1 className="text-4xl font-bold text-brown mb-2">Users</h1>
-          <p className="text-brown/70">Manage user accounts and credentials.</p>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-brown mb-2">Users</h1>
+          <p className="text-brown/70 text-sm sm:text-base">Manage user accounts and credentials.</p>
         </div>
         <button
           onClick={() => {
@@ -253,69 +253,101 @@ export default function AdminUsersPage() {
             setAddFormData({ name: "", email: "", password: "", confirmPassword: "" });
             setAddError(null);
           }}
-          className="px-6 py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium mt-4 sm:mt-0"
+          className="px-4 sm:px-6 py-2 sm:py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-sm sm:text-base mt-4 sm:mt-0 w-full sm:w-auto"
         >
           Add user
         </button>
       </div>
 
       {/* Search */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <input
           type="text"
           placeholder="Search by name or email..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full max-w-md px-4 py-2.5 border-2 border-brown/20 rounded-lg focus:outline-none focus:border-rose text-brown"
+          className="w-full max-w-md px-4 py-2 sm:py-2.5 border-2 border-brown/20 rounded-lg focus:outline-none focus:border-rose text-brown text-sm sm:text-base"
         />
       </div>
 
-      {/* Users Table */}
+      {/* Users - Desktop Table / Mobile Cards */}
       <div className="bg-white rounded-2xl shadow-md border border-brown/10 overflow-hidden">
         {loading ? (
-          <div className="p-8 text-center text-brown/70">Loading users...</div>
+          <div className="p-6 sm:p-8 text-center text-brown/70 text-sm sm:text-base">Loading users...</div>
         ) : filteredUsers.length === 0 ? (
-          <div className="p-8 text-center text-brown/70">
+          <div className="p-6 sm:p-8 text-center text-brown/70 text-sm sm:text-base">
             {searchTerm ? "No users found matching your search." : "No users found."}
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-beige border-b border-brown/10">
-                <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-brown">Name</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-brown">Email</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-brown">Created</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-brown">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-brown/10">
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-beige/30 transition-colors">
-                    <td className="px-6 py-4 text-brown font-medium">{user.name}</td>
-                    <td className="px-6 py-4 text-brown/80">{user.email}</td>
-                    <td className="px-6 py-4 text-brown/70 text-sm">{formatDate(user.createdAt)}</td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => openEditModal(user)}
-                          className="px-4 py-2 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium text-sm"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => openResetModal(user)}
-                          className="px-4 py-2 bg-rose/20 text-rose rounded-full hover:bg-rose/30 transition-colors font-medium text-sm"
-                        >
-                          Reset password
-                        </button>
-                      </div>
-                    </td>
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-beige border-b border-brown/10">
+                  <tr>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-brown">Name</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-brown">Email</th>
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-brown">Created</th>
+                    <th className="px-6 py-4 text-right text-sm font-semibold text-brown">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-brown/10">
+                  {filteredUsers.map((user) => (
+                    <tr key={user.id} className="hover:bg-beige/30 transition-colors">
+                      <td className="px-6 py-4 text-brown font-medium">{user.name}</td>
+                      <td className="px-6 py-4 text-brown/80">{user.email}</td>
+                      <td className="px-6 py-4 text-brown/70 text-sm">{formatDate(user.createdAt)}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => openEditModal(user)}
+                            className="px-4 py-2 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium text-sm"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => openResetModal(user)}
+                            className="px-4 py-2 bg-rose/20 text-rose rounded-full hover:bg-rose/30 transition-colors font-medium text-sm"
+                          >
+                            Reset password
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden divide-y divide-brown/10">
+              {filteredUsers.map((user) => (
+                <div key={user.id} className="p-4 hover:bg-beige/30 transition-colors">
+                  <div className="space-y-3">
+                    <div>
+                      <h3 className="font-medium text-brown text-sm sm:text-base mb-1">{user.name}</h3>
+                      <p className="text-brown/70 text-xs sm:text-sm break-all">{user.email}</p>
+                      <p className="text-brown/60 text-xs mt-1">{formatDate(user.createdAt)}</p>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      <button
+                        onClick={() => openEditModal(user)}
+                        className="px-3 py-1.5 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium text-xs sm:text-sm flex-1 min-w-[80px]"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => openResetModal(user)}
+                        className="px-3 py-1.5 bg-rose/20 text-rose rounded-full hover:bg-rose/30 transition-colors font-medium text-xs sm:text-sm flex-1 min-w-[120px]"
+                      >
+                        Reset password
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -374,10 +406,10 @@ export default function AdminUsersPage() {
                 {addError}
               </div>
             )}
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
               <button
                 type="submit"
-                className="flex-1 px-6 py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-sm sm:text-base"
               >
                 Create User
               </button>
@@ -387,7 +419,7 @@ export default function AdminUsersPage() {
                   setShowAddModal(false);
                   setAddError(null);
                 }}
-                className="flex-1 px-6 py-3 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium text-sm sm:text-base"
               >
                 Cancel
               </button>
@@ -432,10 +464,10 @@ export default function AdminUsersPage() {
                 {editError}
               </div>
             )}
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
               <button
                 type="submit"
-                className="flex-1 px-6 py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-sm sm:text-base"
               >
                 Save Changes
               </button>
@@ -446,7 +478,7 @@ export default function AdminUsersPage() {
                   setSelectedUser(null);
                   setEditError(null);
                 }}
-                className="flex-1 px-6 py-3 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium text-sm sm:text-base"
               >
                 Cancel
               </button>
@@ -498,10 +530,10 @@ export default function AdminUsersPage() {
                 {resetError}
               </div>
             )}
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4">
               <button
                 type="submit"
-                className="flex-1 px-6 py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-sm sm:text-base"
               >
                 Reset Password
               </button>
@@ -512,7 +544,7 @@ export default function AdminUsersPage() {
                   setSelectedUser(null);
                   setResetError(null);
                 }}
-                className="flex-1 px-6 py-3 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium"
+                className="flex-1 px-4 sm:px-6 py-2.5 sm:py-3 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium text-sm sm:text-base"
               >
                 Cancel
               </button>
@@ -535,15 +567,15 @@ function Modal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-2xl max-w-md w-full p-4 sm:p-6 relative max-h-[95vh] sm:max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-brown/70 hover:text-brown transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-brown/70 hover:text-brown transition-colors z-10"
           aria-label="Close"
         >
           <svg
-            className="w-6 h-6"
+            className="w-5 h-5 sm:w-6 sm:h-6"
             fill="none"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -554,7 +586,7 @@ function Modal({
             <path d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
-        <h2 className="text-2xl font-bold text-brown mb-6">{title}</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-brown mb-4 sm:mb-6 pr-8">{title}</h2>
         {children}
       </div>
     </div>

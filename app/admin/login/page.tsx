@@ -55,15 +55,15 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-beige flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md w-full border border-brown/10">
+    <main className="min-h-screen bg-beige flex items-center justify-center px-4 py-8">
+      <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-6 sm:p-8 max-w-md w-full border border-brown/10">
         {/* Logo/Title */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-2 mb-4">
-            <span className="text-2xl font-bold text-brown">LYKKE</span>
-            <span className="text-2xl font-bold text-brown">LOOP</span>
+        <div className="text-center mb-6 sm:mb-8">
+          <div className="flex items-center justify-center space-x-2 mb-3 sm:mb-4">
+            <span className="text-xl sm:text-2xl font-bold text-brown">LYKKE</span>
+            <span className="text-xl sm:text-2xl font-bold text-brown">LOOP</span>
           </div>
-          <h1 className="text-3xl font-semibold text-brown">Admin Login</h1>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-brown">Admin Login</h1>
         </div>
 
         {/* Form */}
@@ -117,7 +117,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-2.5 sm:py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-base sm:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? "Logging in..." : "Log in"}
           </button>

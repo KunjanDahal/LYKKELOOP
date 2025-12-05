@@ -6,6 +6,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import ModalWrapper from "@/components/ModalWrapper";
 import ToastContainer from "@/components/ToastContainer";
+import ChatButtonWrapper from "@/components/ChatButtonWrapper";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -32,6 +33,7 @@ export default function RootLayout({
               {children}
               <ModalWrapper />
               <ToastContainer />
+              <ChatButtonWrapper />
             </ModalProvider>
           </AuthProvider>
         </ToastProvider>
