@@ -17,6 +17,7 @@ function AdminMessagesContent() {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
   const [inputValue, setInputValue] = useState("");
+  const [showChat, setShowChat] = useState(false); // For mobile view
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { showToast } = useToast();
   const searchParams = useSearchParams();
@@ -42,6 +43,7 @@ function AdminMessagesContent() {
       const conv = conversations.find((c) => c.id === convId);
       if (conv) {
         setSelectedConversationId(convId);
+        setShowChat(true);
       }
     }
   }, [searchParams, conversations]);
@@ -68,9 +70,14 @@ function AdminMessagesContent() {
         if (!selectedConversationId && conversationsList.length > 0) {
           const convId = urlConvId || conversationsList[0].id;
           setSelectedConversationId(convId);
+          // On desktop, show chat automatically; on mobile, only if URL param exists
+          if (urlConvId || window.innerWidth >= 1024) {
+            setShowChat(true);
+          }
         } else if (urlConvId && conversationsList.some((c: ConversationResponse) => c.id === urlConvId)) {
           // If URL has a conversation ID and it exists, select it
           setSelectedConversationId(urlConvId);
+          setShowChat(true);
         }
       } catch (error) {
         console.error("Failed to fetch conversations:", error);
@@ -327,18 +334,31 @@ function AdminMessagesContent() {
     (c) => c.id === selectedConversationId
   );
 
+  // Handle conversation selection - show chat on mobile
+  const handleConversationSelect = (convId: string) => {
+    setSelectedConversationId(convId);
+    setShowChat(true);
+  };
+
+  // Handle back button on mobile
+  const handleBack = () => {
+    setShowChat(false);
+  };
+
   return (
-    <div className="h-[calc(100vh-200px)] flex flex-col lg:flex-row gap-4">
+    <div className="h-[calc(100vh-200px)] sm:h-[calc(100vh-200px)] flex flex-col lg:flex-row gap-4">
       {/* Left Panel - Conversation List */}
-      <div className="w-full lg:w-1/3 bg-white rounded-lg shadow-md border border-brown/10 overflow-hidden flex flex-col">
-        <div className="p-4 border-b border-brown/10 bg-rose/5">
-          <h2 className="text-xl font-semibold text-brown">Conversations</h2>
+      <div className={`w-full lg:w-1/3 bg-white rounded-lg shadow-md border border-brown/10 overflow-hidden flex flex-col ${
+        showChat ? 'hidden lg:flex' : 'flex'
+      }`}>
+        <div className="p-3 sm:p-4 border-b border-brown/10 bg-rose/5">
+          <h2 className="text-lg sm:text-xl font-semibold text-brown">Conversations</h2>
         </div>
         <div className="flex-1 overflow-y-auto">
           {loading ? (
-            <div className="p-4 text-center text-brown/60">Loading...</div>
+            <div className="p-4 text-center text-brown/60 text-sm">Loading...</div>
           ) : conversations.length === 0 ? (
-            <div className="p-4 text-center text-brown/60">
+            <div className="p-4 text-center text-brown/60 text-sm">
               No conversations yet
             </div>
           ) : (
@@ -346,17 +366,17 @@ function AdminMessagesContent() {
               {conversations.map((conv) => (
                 <button
                   key={conv.id}
-                  onClick={() => setSelectedConversationId(conv.id)}
-                  className={`w-full text-left p-4 hover:bg-brown/5 transition-colors ${
+                  onClick={() => handleConversationSelect(conv.id)}
+                  className={`w-full text-left p-3 sm:p-4 hover:bg-brown/5 transition-colors ${
                     selectedConversationId === conv.id ? "bg-rose/10" : ""
                   }`}
                 >
                   <div className="flex items-start justify-between mb-1">
                     <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-brown truncate">
+                      <p className="font-semibold text-brown truncate text-sm sm:text-base">
                         {conv.user?.name || "Unknown User"}
                       </p>
-                      <p className="text-sm text-brown/60 truncate">
+                      <p className="text-xs sm:text-sm text-brown/60 truncate">
                         {conv.user?.email || ""}
                       </p>
                     </div>
@@ -367,7 +387,7 @@ function AdminMessagesContent() {
                     )}
                   </div>
                   {conv.lastMessageSnippet && (
-                    <p className="text-sm text-brown/70 truncate mt-1">
+                    <p className="text-xs sm:text-sm text-brown/70 truncate mt-1">
                       {conv.lastMessageSnippet}
                     </p>
                   )}
@@ -399,31 +419,53 @@ function AdminMessagesContent() {
       </div>
 
       {/* Right Panel - Chat Thread */}
-      <div className="flex-1 w-full lg:w-auto bg-white rounded-lg shadow-md border border-brown/10 overflow-hidden flex flex-col min-h-0">
+      <div className={`flex-1 w-full lg:w-auto bg-white rounded-lg shadow-md border border-brown/10 overflow-hidden flex flex-col min-h-0 ${
+        showChat ? 'flex' : 'hidden lg:flex'
+      }`}>
         {selectedConversation ? (
           <>
             {/* Header */}
-            <div className="p-4 border-b border-brown/10 bg-rose/5">
-              <h3 className="font-semibold text-brown">
-                {selectedConversation.user?.name || "Unknown User"}
-              </h3>
-              <p className="text-sm text-brown/60">
-                {selectedConversation.user?.email || ""}
-              </p>
+            <div className="p-3 sm:p-4 border-b border-brown/10 bg-rose/5 flex items-center gap-3">
+              {/* Back button for mobile */}
+              <button
+                onClick={handleBack}
+                className="lg:hidden text-brown hover:text-rose transition-colors flex-shrink-0"
+                aria-label="Back to conversations"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-brown text-sm sm:text-base truncate">
+                  {selectedConversation.user?.name || "Unknown User"}
+                </h3>
+                <p className="text-xs sm:text-sm text-brown/60 truncate">
+                  {selectedConversation.user?.email || ""}
+                </p>
+              </div>
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-3 sm:p-4 min-h-0">
+            <div className="flex-1 overflow-y-auto p-2 sm:p-3 md:p-4 min-h-0">
               {messagesLoading ? (
-                <div className="text-center text-brown/60 py-8">
-                  Loading messages...
-                </div>
+                <div className="text-center text-brown/60 py-8 text-sm">Loading messages...</div>
               ) : messages.length === 0 ? (
-                <div className="text-center text-brown/60 py-8">
+                <div className="text-center text-brown/60 py-8 text-sm">
                   No messages yet. Start the conversation!
                 </div>
               ) : (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-2 sm:gap-3">
                   {messages.map((message) => {
                   // Determine if message is from current user (the admin viewing this chat)
                   // On admin site: 
@@ -447,7 +489,7 @@ function AdminMessagesContent() {
             </div>
 
             {/* Input */}
-            <div className="p-4 border-t border-brown/10">
+            <div className="p-3 sm:p-4 border-t border-brown/10 bg-white flex-shrink-0">
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -455,22 +497,22 @@ function AdminMessagesContent() {
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Type a message..."
-                  className="flex-1 px-4 py-2 border border-brown/20 rounded-full focus:outline-none focus:border-rose text-brown placeholder-brown/50"
+                  className="flex-1 px-3 sm:px-4 py-2 sm:py-2.5 border border-brown/20 rounded-full focus:outline-none focus:border-rose text-brown placeholder-brown/50 text-sm sm:text-base"
                   disabled={sending}
                 />
                 <button
                   onClick={handleSend}
                   disabled={!inputValue.trim() || sending}
-                  className="px-6 py-2 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                  className="px-4 sm:px-6 py-2 sm:py-2.5 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium text-sm sm:text-base flex-shrink-0"
                 >
-                  {sending ? "Sending..." : "Send"}
+                  {sending ? "..." : "Send"}
                 </button>
               </div>
             </div>
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center">
-            <p className="text-brown/60">Select a conversation to start</p>
+            <p className="text-brown/60 text-sm sm:text-base">Select a conversation to start</p>
           </div>
         )}
       </div>

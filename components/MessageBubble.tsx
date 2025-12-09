@@ -35,7 +35,7 @@ export default function MessageBubble({ message, isOwnMessage }: MessageBubblePr
   return (
     <div style={containerStyle}>
       <div
-        className={`max-w-[75%] sm:max-w-[70%] rounded-2xl px-4 py-2.5 text-sm shadow-sm ${
+        className={`max-w-[85%] sm:max-w-[75%] md:max-w-[70%] rounded-2xl px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm shadow-sm ${
           isOwnMessage
             ? "bg-blue-500 text-white rounded-br-sm"
             : "bg-beige text-brown rounded-bl-sm"
@@ -46,7 +46,7 @@ export default function MessageBubble({ message, isOwnMessage }: MessageBubblePr
           {message.content}
         </p>
         <span
-          className={`mt-1.5 block text-[10px] ${
+          className={`mt-1 sm:mt-1.5 block text-[10px] sm:text-xs ${
             isOwnMessage
               ? "text-white/70 text-right"
               : "text-brown/60 text-left"
