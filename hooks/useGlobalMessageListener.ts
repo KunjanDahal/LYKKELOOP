@@ -89,40 +89,53 @@ export function useGlobalMessageListener({
             }
           }
         } else {
-          // User: check for unread messages
-          const response = await fetch("/api/notifications/unread-count", {
-            credentials: "include",
-          });
-          if (response.ok) {
-            const data = await response.json();
-            if (data.unreadCount > 0) {
-              // Fetch conversation to get latest message
-              const convResponse = await fetch("/api/conversations", {
-                method: "POST",
-                credentials: "include",
-              });
-              if (convResponse.ok) {
-                const convData = await convResponse.json();
-                const messagesResponse = await fetch(
-                  `/api/conversations/${convData.id}`,
-                  { credentials: "include" }
-                );
-                if (messagesResponse.ok) {
-                  const messagesData = await messagesResponse.json();
-                  const messages = messagesData.messages || [];
-                  if (messages.length > 0) {
-                    // Get the latest message from admin
-                    const adminMessages = messages.filter(
+          // User: always fetch conversation and check for new admin messages
+          // Don't rely on unread count alone - check actual messages
+          try {
+            const convResponse = await fetch("/api/conversations", {
+              method: "POST",
+              credentials: "include",
+            });
+            if (convResponse.ok) {
+              const convData = await convResponse.json();
+              const messagesResponse = await fetch(
+                `/api/conversations/${convData.id}`,
+                { credentials: "include" }
+              );
+              if (messagesResponse.ok) {
+                const messagesData = await messagesResponse.json();
+                const messages = messagesData.messages || [];
+                if (messages.length > 0) {
+                  // Get all admin messages, sorted by createdAt
+                  const adminMessages = messages
+                    .filter(
                       (msg: MessageResponse) => msg.senderRole === "admin"
+                    )
+                    .sort(
+                      (a: MessageResponse, b: MessageResponse) =>
+                        new Date(a.createdAt).getTime() -
+                        new Date(b.createdAt).getTime()
                     );
-                    if (adminMessages.length > 0) {
-                      const latestMessage =
-                        adminMessages[adminMessages.length - 1];
-                      if (
-                        !lastMessageIdRef.current.has(latestMessage.id) &&
-                        (!isChatPopupOpen ||
-                          activeConversationId !== convData.id)
-                      ) {
+                  
+                  if (adminMessages.length > 0) {
+                    // Get the most recent admin message
+                    const latestMessage = adminMessages[adminMessages.length - 1];
+                    
+                    // Check if this is a new message we haven't shown yet
+                    if (
+                      !lastMessageIdRef.current.has(latestMessage.id) &&
+                      (!isChatPopupOpen ||
+                        activeConversationId !== convData.id)
+                    ) {
+                      // Only show toast if message is recent (within last 2 minutes) OR
+                      // if we haven't seen any messages yet (first load)
+                      const messageTime = new Date(latestMessage.createdAt).getTime();
+                      const now = Date.now();
+                      const twoMinutesAgo = now - 2 * 60 * 1000;
+                      const isRecentMessage = messageTime > twoMinutesAgo;
+                      const isFirstLoad = lastMessageIdRef.current.size === 0;
+                      
+                      if (isRecentMessage || isFirstLoad) {
                         lastMessageIdRef.current.add(latestMessage.id);
                         showMessageToast({
                           title: "New message from LykkeLoop",
@@ -133,12 +146,17 @@ export function useGlobalMessageListener({
                             router.push("/?openChat=true");
                           },
                         });
+                      } else {
+                        // Message is older, but add it to seen set so we don't check it again
+                        lastMessageIdRef.current.add(latestMessage.id);
                       }
                     }
                   }
                 }
               }
             }
+          } catch (error) {
+            console.error("Failed to fetch user conversation:", error);
           }
         }
       } catch (error) {
