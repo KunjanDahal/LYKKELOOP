@@ -32,7 +32,15 @@ export function useGlobalMessageListener({
 
   // Polling fallback to check for new messages - runs for users
   useEffect(() => {
+    console.log("[useGlobalMessageListener] Effect running:", {
+      enabled,
+      isAdmin,
+      hasUser: !!user?.id,
+      userId: user?.id,
+    });
+    
     if (!enabled || isAdmin || !user?.id) {
+      console.log("[useGlobalMessageListener] Skipping - conditions not met");
       // Cleanup if disabled
       if (pollingIntervalRef.current) {
         clearInterval(pollingIntervalRef.current);
@@ -41,7 +49,10 @@ export function useGlobalMessageListener({
       return;
     }
 
+    console.log("[useGlobalMessageListener] Starting polling for user:", user.id);
+
     const pollForNewMessages = async () => {
+      console.log("[useGlobalMessageListener] Polling for new messages...");
       try {
         if (isAdmin) {
           // Admin: check conversations for new messages
@@ -121,6 +132,15 @@ export function useGlobalMessageListener({
                     // Get the most recent admin message
                     const latestMessage = adminMessages[adminMessages.length - 1];
                     
+                    console.log("[useGlobalMessageListener] Found admin message:", {
+                      messageId: latestMessage.id,
+                      content: latestMessage.content.substring(0, 50),
+                      alreadySeen: lastMessageIdRef.current.has(latestMessage.id),
+                      isChatOpen: isChatPopupOpen,
+                      activeConvId: activeConversationId,
+                      convId: convData.id,
+                    });
+                    
                     // Check if this is a new message we haven't shown yet
                     if (
                       !lastMessageIdRef.current.has(latestMessage.id) &&
@@ -135,7 +155,14 @@ export function useGlobalMessageListener({
                       const isRecentMessage = messageTime > twoMinutesAgo;
                       const isFirstLoad = lastMessageIdRef.current.size === 0;
                       
+                      console.log("[useGlobalMessageListener] Message check:", {
+                        isRecentMessage,
+                        isFirstLoad,
+                        messageAge: Math.round((now - messageTime) / 1000) + "s ago",
+                      });
+                      
                       if (isRecentMessage || isFirstLoad) {
+                        console.log("[useGlobalMessageListener] Showing toast!");
                         lastMessageIdRef.current.add(latestMessage.id);
                         showMessageToast({
                           title: "New message from LykkeLoop",
@@ -148,8 +175,11 @@ export function useGlobalMessageListener({
                         });
                       } else {
                         // Message is older, but add it to seen set so we don't check it again
+                        console.log("[useGlobalMessageListener] Message too old, marking as seen");
                         lastMessageIdRef.current.add(latestMessage.id);
                       }
+                    } else {
+                      console.log("[useGlobalMessageListener] Skipping - already seen or chat is open");
                     }
                   }
                 }
