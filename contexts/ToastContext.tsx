@@ -25,6 +25,7 @@ interface ToastContextType {
     onClick?: () => void;
     conversationId?: string;
     senderName?: string;
+    buttonText?: string;
   }) => void;
   removeToast: (id: string) => void;
 }
