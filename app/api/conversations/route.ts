@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Conversation from "@/models/Conversation";
-import User from "@/models/User";
+import User, { UserSchema } from "@/models/User";
 import { getAuthUser } from "@/lib/auth";
 import { checkAdminAuth } from "@/lib/adminAuth";
 import mongoose from "mongoose";
@@ -64,6 +64,18 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
+
+    // Ensure User model is registered before populate
+    // This is necessary in serverless environments where models might not be registered
+    // Access the User model to ensure it's registered, then explicitly register if needed
+    if (!mongoose.models.User) {
+      mongoose.model("User", UserSchema);
+    }
+    
+    // Also ensure it's registered on the connection instance
+    if (!mongoose.connection.models.User) {
+      mongoose.connection.model("User", UserSchema);
+    }
 
     // Check if admin
     const isAdmin = await checkAdminAuth();
