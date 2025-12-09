@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Conversation from "@/models/Conversation";
+import User from "@/models/User";
 import { getAuthUser } from "@/lib/auth";
 import { checkAdminAuth } from "@/lib/adminAuth";
 import mongoose from "mongoose";
