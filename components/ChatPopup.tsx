@@ -5,6 +5,7 @@ import { MessageResponse, ConversationResponse } from "@/types";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
 import { useToast } from "@/contexts/ToastContext";
+import { useChatState } from "@/contexts/ChatStateContext";
 import MessageBubble from "./MessageBubble";
 
 interface ChatPopupProps {
@@ -21,6 +22,7 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { showToast } = useToast();
+  const { setIsChatPopupOpen, setActiveConversationId } = useChatState();
 
   // Scroll to bottom when messages change, conversation changes, or popup opens
   const scrollToBottom = () => {
@@ -57,6 +59,7 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
 
         const convData: ConversationResponse = await convResponse.json();
         setConversationId(convData.id);
+        setActiveConversationId(convData.id);
 
         // Fetch messages
         const messagesResponse = await fetch(
@@ -89,7 +92,15 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
     };
 
     initializeConversation();
-  }, [isOpen, user, showToast]);
+  }, [isOpen, user, showToast, setActiveConversationId]);
+
+  // Sync chat state with context
+  useEffect(() => {
+    setIsChatPopupOpen(isOpen);
+    if (!isOpen) {
+      setActiveConversationId(null);
+    }
+  }, [isOpen, setIsChatPopupOpen, setActiveConversationId]);
 
   // Handle new message from real-time
   const handleNewMessage = (message: MessageResponse, senderName: string) => {

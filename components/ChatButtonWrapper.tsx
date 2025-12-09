@@ -5,26 +5,29 @@ import { useEffect, useState, Suspense } from "react";
 import ChatButton from "./ChatButton";
 import ChatPopup from "./ChatPopup";
 import { useAuth } from "@/contexts/AuthContext";
+import { useChatState } from "@/contexts/ChatStateContext";
 
 function ChatButtonContent() {
   const searchParams = useSearchParams();
   const { user, loading } = useAuth();
-  const [shouldOpenChat, setShouldOpenChat] = useState(false);
+  const { isChatPopupOpen, setIsChatPopupOpen } = useChatState();
 
   // Check for openChat query param
   useEffect(() => {
     if (!loading && user && searchParams?.get("openChat") === "true") {
-      setShouldOpenChat(true);
+      setIsChatPopupOpen(true);
     }
-  }, [loading, user, searchParams]);
+  }, [loading, user, searchParams, setIsChatPopupOpen]);
 
   return (
     <>
       <ChatButton />
-      {shouldOpenChat && (
+      {isChatPopupOpen && (
         <ChatPopup
-          isOpen={shouldOpenChat}
-          onClose={() => setShouldOpenChat(false)}
+          isOpen={isChatPopupOpen}
+          onClose={() => {
+            setIsChatPopupOpen(false);
+          }}
         />
       )}
     </>

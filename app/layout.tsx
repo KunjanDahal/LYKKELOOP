@@ -4,9 +4,11 @@ import "./globals.css";
 import { ModalProvider } from "@/contexts/ModalContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/contexts/ToastContext";
+import { ChatStateProvider } from "@/contexts/ChatStateContext";
 import ModalWrapper from "@/components/ModalWrapper";
 import ToastContainer from "@/components/ToastContainer";
 import ChatButtonWrapper from "@/components/ChatButtonWrapper";
+import GlobalMessageListener from "@/components/GlobalMessageListener";
 
 const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
@@ -29,12 +31,15 @@ export default function RootLayout({
       <body className={`${poppins.variable} font-sans antialiased`}>
         <ToastProvider>
           <AuthProvider>
-            <ModalProvider>
-              {children}
-              <ModalWrapper />
-              <ToastContainer />
-              <ChatButtonWrapper />
-            </ModalProvider>
+            <ChatStateProvider>
+              <ModalProvider>
+                {children}
+                <ModalWrapper />
+                <ToastContainer />
+                <ChatButtonWrapper />
+                <GlobalMessageListener />
+              </ModalProvider>
+            </ChatStateProvider>
           </AuthProvider>
         </ToastProvider>
       </body>

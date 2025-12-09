@@ -3,6 +3,7 @@
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { useToast } from "@/contexts/ToastContext";
+import AdminGlobalMessageListener from "@/components/AdminGlobalMessageListener";
 
 export default function AdminLayout({
   children,
@@ -104,6 +105,7 @@ export default function AdminLayout({
       <main className="container mx-auto px-3 sm:px-4 py-3 sm:py-6 md:py-8">
         {children}
       </main>
+      {!isLoginPage && <AdminGlobalMessageListener />}
     </div>
   );
 }
