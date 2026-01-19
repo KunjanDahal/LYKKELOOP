@@ -63,10 +63,7 @@ export default function ProductDetailPage() {
     if (!user) {
       openModal();
     } else {
-      // Placeholder for future payment integration
-      // For now, show an alert or redirect to a checkout page when implemented
-      alert("Payment flow coming soon! This will redirect to checkout.");
-      // router.push("/checkout");
+      router.push(`/payment/${params.id}`);
     }
   };
 
