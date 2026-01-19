@@ -7,6 +7,11 @@ import { getAuthUser } from "@/lib/auth";
 import { checkAdminAuth } from "@/lib/adminAuth";
 import mongoose from "mongoose";
 
+// Ensure models are registered before use
+// This forces the models to be evaluated and registered with Mongoose
+void Product;
+void User;
+
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -92,6 +97,13 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
+    
+    // Ensure models are registered - reference them to force evaluation
+    // This ensures Mongoose can find them when populating
+    const _productModel = Product;
+    const _userModel = User;
+    void _productModel;
+    void _userModel;
 
     const isAdmin = await checkAdminAuth();
     const authUser = await getAuthUser();

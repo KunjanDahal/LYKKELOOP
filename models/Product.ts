@@ -65,11 +65,9 @@ ProductSchema.pre('validate', function(next) {
 });
 
 // Prevent re-compilation during development
-// Delete existing model if it exists to ensure schema changes take effect
-if (mongoose.models.Product) {
-  delete mongoose.models.Product;
-}
-const Product: Model<IProduct> = mongoose.model<IProduct>("Product", ProductSchema);
+// Use existing model if available, otherwise create new one
+const Product: Model<IProduct> =
+  mongoose.models.Product || mongoose.model<IProduct>("Product", ProductSchema);
 
 export default Product;
 
