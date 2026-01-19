@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -178,14 +179,17 @@ export default function PaymentPage() {
             <div className="flex flex-col items-center">
               <h2 className="text-xl font-semibold text-brown mb-4">Scan to Pay</h2>
               <div className="bg-white p-4 rounded-lg border-2 border-brown/20 mb-6 flex items-center justify-center">
-                <img
+                <Image
                   src="/api/assets/qr"
                   alt="Payment QR Code"
-                  className="w-[220px] h-[220px] object-contain"
+                  width={220}
+                  height={220}
+                  className="object-contain"
+                  unoptimized
                 />
               </div>
               <p className="text-sm text-brown/70 text-center mb-6">
-                Scan the QR code to complete payment, then click "Payment Done" below.
+                Scan the QR code to complete payment, then click &quot;Payment Done&quot; below.
               </p>
             </div>
           </div>

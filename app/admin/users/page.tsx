@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useToast } from "@/contexts/ToastContext";
 
 interface User {
@@ -45,7 +45,7 @@ export default function AdminUsersPage() {
   const [resetError, setResetError] = useState<string | null>(null);
 
   // Fetch users
-  const fetchUsers = async () => {
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/users");
@@ -61,11 +61,11 @@ export default function AdminUsersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [fetchUsers]);
 
   // Filter users by search term
   const filteredUsers = users.filter(
