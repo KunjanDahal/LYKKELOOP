@@ -69,6 +69,8 @@ export default function Navbar() {
             <div className="flex items-center space-x-4 ml-4">
               {loading ? (
                 <div className="w-20 h-8 bg-beige rounded animate-pulse"></div>
+              ) : user ? (
+                <ProfileDropdown />
               ) : (
                 <Link
                   href="/name-login"
