@@ -94,8 +94,12 @@ export async function GET(request: NextRequest) {
     const isAdmin = await checkAdminAuth();
     const authUser = await getAuthUser();
 
-    if (!isAdmin && !authUser) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Strict authentication check: must be either admin OR authenticated user
+    if (!isAdmin) {
+      // For non-admin requests, authUser MUST exist
+      if (!authUser || !authUser.userId) {
+        return NextResponse.json({ error: "Unauthorized. Please log in." }, { status: 401 });
+      }
     }
 
     let purchases;
@@ -107,10 +111,14 @@ export async function GET(request: NextRequest) {
         .sort({ createdAt: -1 })
         .lean();
     } else {
-      // User gets only their purchases
+      // User gets only their purchases - authUser is guaranteed to exist here
+      if (!authUser || !authUser.userId) {
+        return NextResponse.json({ error: "Unauthorized. Please log in." }, { status: 401 });
+      }
+      
       // Use lean() for better performance and to avoid Mongoose document issues
       purchases = await Purchase.find({
-        userId: new mongoose.Types.ObjectId(authUser!.userId),
+        userId: new mongoose.Types.ObjectId(authUser.userId),
       })
         .populate("productId", "name")
         .sort({ createdAt: -1 })

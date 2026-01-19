@@ -47,7 +47,11 @@ export default function MyPurchasesPage() {
 
   useEffect(() => {
     const fetchPurchases = async () => {
-      if (!user) return;
+      // Don't fetch if user is not authenticated
+      if (!user || authLoading) {
+        setLoading(false);
+        return;
+      }
 
       try {
         setLoading(true);
@@ -55,23 +59,36 @@ export default function MyPurchasesPage() {
           credentials: "include",
         });
 
+        if (response.status === 401) {
+          // Unauthorized - redirect to login
+          router.push("/name-login?redirect=/my-purchases");
+          return;
+        }
+
         if (!response.ok) {
-          throw new Error("Failed to fetch purchases");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "Failed to fetch purchases");
         }
 
         const data = await response.json();
         setPurchases(data.purchases || []);
       } catch (error: any) {
-        showToast(error.message || "Failed to load purchases", "error");
+        console.error("Failed to fetch purchases:", error);
+        if (error.message?.includes("Unauthorized") || error.message?.includes("log in")) {
+          router.push("/name-login?redirect=/my-purchases");
+        } else {
+          showToast(error.message || "Failed to load purchases", "error");
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    if (user) {
+    // Only fetch when user is confirmed authenticated and not loading
+    if (user && !authLoading) {
       fetchPurchases();
     }
-  }, [user, showToast]);
+  }, [user, authLoading, router, showToast]);
 
   if (authLoading || loading) {
     return (
