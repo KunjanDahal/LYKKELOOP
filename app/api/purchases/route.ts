@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import Purchase from "@/models/Purchase";
+import Product from "@/models/Product";
+import User from "@/models/User";
 import { getAuthUser } from "@/lib/auth";
 import { checkAdminAuth } from "@/lib/adminAuth";
 import mongoose from "mongoose";
