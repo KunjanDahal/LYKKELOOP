@@ -130,11 +130,13 @@ export default function ProfilePage() {
               <label className="block text-sm font-medium text-brown mb-2">Email</label>
               <input
                 type="email"
-                value={user.email}
+                value={user.email || ""}
                 disabled
                 className="w-full px-4 py-2.5 border-2 border-brown/20 rounded-lg bg-beige/50 text-brown/70 cursor-not-allowed"
               />
-              <p className="text-xs text-brown/60 mt-1">Email cannot be changed</p>
+              <p className="text-xs text-brown/60 mt-1">
+                {user.email ? "Email cannot be changed" : "No email (name-only account)"}
+              </p>
             </div>
             <div>
               <label className="block text-sm font-medium text-brown mb-2">Name</label>

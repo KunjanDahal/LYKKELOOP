@@ -5,7 +5,7 @@ import { createContext, useContext, useEffect, useState, ReactNode } from "react
 interface User {
   id: string;
   name: string;
-  email: string;
+  email?: string | null;
 }
 
 interface AuthContextType {
@@ -13,6 +13,7 @@ interface AuthContextType {
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (name: string, email: string, password: string) => Promise<void>;
+  loginWithName: (name: string) => Promise<void>;
   logout: () => Promise<void>;
   updateName: (name: string) => Promise<void>;
   changePassword: (oldPassword: string, newPassword: string, confirmNewPassword: string) => Promise<void>;
@@ -104,6 +105,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   };
 
+  const loginWithName = async (name: string) => {
+    const response = await fetch("/api/auth/name-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name }),
+      credentials: "include",
+    });
+
+    const contentType = response.headers.get("content-type");
+    let data;
+    
+    if (contentType && contentType.includes("application/json")) {
+      const text = await response.text();
+      if (text) {
+        try {
+          data = JSON.parse(text);
+        } catch (parseError) {
+          throw new Error("Invalid response from server");
+        }
+      } else {
+        data = {};
+      }
+    } else {
+      data = {};
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || `Login failed (${response.status})`);
+    }
+
+    setUser(data.user);
+    // Refresh user to ensure we have the latest data
+    await refreshUser();
+  };
+
   const logout = async () => {
     await fetch("/api/auth/logout", {
       method: "POST",
@@ -155,6 +191,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loading,
         login,
         signup,
+        loginWithName,
         logout,
         updateName,
         changePassword,

@@ -104,32 +104,49 @@ export async function GET(request: NextRequest) {
       purchases = await Purchase.find()
         .populate("userId", "name email")
         .populate("productId", "name")
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .lean();
     } else {
       // User gets only their purchases
+      // Use lean() for better performance and to avoid Mongoose document issues
       purchases = await Purchase.find({
         userId: new mongoose.Types.ObjectId(authUser!.userId),
       })
         .populate("productId", "name")
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 })
+        .lean();
     }
 
     return NextResponse.json({
-      purchases: purchases.map((p) => ({
-        id: p._id.toString(),
-        productId: p.productId.toString(),
-        productName: p.productName,
-        productType: p.productType,
-        price: p.price,
-        verificationStatus: p.verificationStatus,
-        createdAt: p.createdAt,
-        updatedAt: p.updatedAt,
-        ...(isAdmin && {
-          userId: (p.userId as any)?._id?.toString(),
-          userName: (p.userId as any)?.name,
-          userEmail: (p.userId as any)?.email,
-        }),
-      })),
+      purchases: purchases.map((p: any) => {
+        // Handle case where productId might be null or product was deleted
+        let productId: string;
+        if (!p.productId) {
+          productId = '';
+        } else if (typeof p.productId === 'object' && p.productId._id) {
+          productId = p.productId._id.toString();
+        } else if (typeof p.productId === 'object' && p.productId.toString) {
+          productId = p.productId.toString();
+        } else {
+          productId = String(p.productId);
+        }
+        
+        return {
+          id: p._id.toString(),
+          productId,
+          productName: p.productName,
+          productType: p.productType,
+          price: p.price,
+          verificationStatus: p.verificationStatus,
+          createdAt: p.createdAt,
+          updatedAt: p.updatedAt,
+          ...(isAdmin && {
+            userId: p.userId?._id?.toString() || (typeof p.userId === 'string' ? p.userId : p.userId?.toString() || ''),
+            userName: p.userId?.name || 'Unknown',
+            userEmail: p.userId?.email || null,
+          }),
+        };
+      }),
     });
   } catch (error: any) {
     console.error("Get purchases error:", error);
