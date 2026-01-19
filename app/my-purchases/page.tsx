@@ -57,26 +57,46 @@ export default function MyPurchasesPage() {
         setLoading(true);
         const response = await fetch("/api/purchases", {
           credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
         });
 
         if (response.status === 401) {
           // Unauthorized - redirect to login
           router.push("/name-login?redirect=/my-purchases");
+          setLoading(false);
           return;
         }
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || "Failed to fetch purchases");
+          // Try to get error message from response
+          let errorMessage = "Failed to fetch purchases";
+          try {
+            const errorData = await response.json();
+            errorMessage = errorData.error || errorMessage;
+          } catch {
+            // If response is not JSON, use status text
+            errorMessage = response.statusText || errorMessage;
+          }
+          throw new Error(errorMessage);
         }
 
         const data = await response.json();
-        setPurchases(data.purchases || []);
+        // Ensure purchases is an array
+        setPurchases(Array.isArray(data.purchases) ? data.purchases : []);
       } catch (error: any) {
         console.error("Failed to fetch purchases:", error);
-        if (error.message?.includes("Unauthorized") || error.message?.includes("log in")) {
+        
+        // Handle network errors gracefully
+        if (error.message?.includes("Failed to fetch") || error.message?.includes("NetworkError") || error.message?.includes("ERR_CONNECTION")) {
+          // Network error - don't show error toast, just log it
+          console.warn("Network error fetching purchases - this is normal if server is not running");
+          setPurchases([]); // Set empty array so UI shows "no purchases" instead of error
+        } else if (error.message?.includes("Unauthorized") || error.message?.includes("log in")) {
           router.push("/name-login?redirect=/my-purchases");
         } else {
+          // Only show toast for actual errors, not network issues
           showToast(error.message || "Failed to load purchases", "error");
         }
       } finally {

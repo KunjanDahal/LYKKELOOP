@@ -185,11 +185,21 @@ export function useGlobalMessageListener({
                 }
               }
             }
-          } catch (error) {
+          } catch (error: any) {
+            // Silently handle network errors - don't spam console
+            if (error?.message?.includes("Failed to fetch") || error?.message?.includes("ERR_CONNECTION")) {
+              // Network error - server might not be running, this is OK
+              return;
+            }
             console.error("Failed to fetch user conversation:", error);
           }
         }
-      } catch (error) {
+      } catch (error: any) {
+        // Silently handle network errors during polling
+        if (error?.message?.includes("Failed to fetch") || error?.message?.includes("ERR_CONNECTION")) {
+          // Network error - server might not be running, this is OK
+          return;
+        }
         console.error("Failed to poll for new messages:", error);
       }
     };
@@ -379,7 +389,12 @@ export function useGlobalAdminMessageListener({
             }
           }
         }
-      } catch (error) {
+      } catch (error: any) {
+        // Silently handle network errors during polling
+        if (error?.message?.includes("Failed to fetch") || error?.message?.includes("ERR_CONNECTION")) {
+          // Network error - server might not be running, this is OK
+          return;
+        }
         console.error("Failed to poll for new messages:", error);
       }
     };
