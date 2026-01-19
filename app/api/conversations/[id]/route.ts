@@ -78,6 +78,8 @@ export async function GET(
           senderId: msg.senderId?.toString() || null,
           senderRole: msg.senderRole,
           content: msg.content,
+          mediaType: (msg as any).mediaType || null,
+          mediaUrl: (msg as any).mediaUrl || null,
           createdAt: msg.createdAt,
           readAt: msg.readAt || null,
         };

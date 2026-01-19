@@ -33,10 +33,10 @@ export default function Hero() {
               Browse Earrings
             </Link>
             <Link
-              href="/signup"
+              href="/name-login"
               className="px-8 py-3 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-all hover:scale-105 font-medium text-center"
             >
-              Sign up & get 10% off
+              Enter your name
             </Link>
           </div>
         </div>

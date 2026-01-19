@@ -19,7 +19,7 @@ export default function EarringsPage() {
   // Redirect to login if not authenticated (only after auth check is complete)
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/login?redirect=/earrings");
+      router.push("/name-login?redirect=/earrings");
     }
   }, [user, authLoading, router]);
 

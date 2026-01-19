@@ -26,19 +26,19 @@ export default function AdminDashboard() {
         </a>
 
         {/* View Orders */}
-        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-md border border-brown/10 hover:shadow-lg transition-shadow">
+        <a
+          href="/admin/purchases"
+          className="bg-white rounded-2xl p-4 sm:p-6 shadow-md border border-brown/10 hover:shadow-lg transition-shadow block"
+        >
           <div className="text-3xl sm:text-4xl mb-3 sm:mb-4">📋</div>
           <h2 className="text-xl sm:text-2xl font-semibold text-brown mb-2">View Orders</h2>
           <p className="text-brown/70 text-xs sm:text-sm mb-3 sm:mb-4">
             Track and manage customer orders.
           </p>
-          <button
-            disabled
-            className="px-3 sm:px-4 py-1.5 sm:py-2 bg-brown/10 text-brown rounded-full font-medium cursor-not-allowed text-sm sm:text-base"
-          >
-            Coming soon
-          </button>
-        </div>
+          <span className="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-rose text-white rounded-full font-medium text-sm sm:text-base">
+            Manage Purchases →
+          </span>
+        </a>
 
         {/* Users */}
         <a

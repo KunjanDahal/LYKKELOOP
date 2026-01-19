@@ -62,26 +62,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { conversationId, content } = body;
+    const { conversationId, content, mediaType, mediaUrl } = body;
 
     // Validation
-    if (!conversationId || !content) {
+    if (!conversationId) {
       return NextResponse.json(
-        { error: "Conversation ID and content are required" },
+        { error: "Conversation ID is required" },
         { status: 400 }
       );
     }
 
-    if (typeof content !== "string" || content.trim().length === 0) {
+    // Either content or media must be provided
+    if ((!content || content.trim().length === 0) && !mediaUrl) {
       return NextResponse.json(
-        { error: "Message content cannot be empty" },
+        { error: "Message content or media is required" },
         { status: 400 }
       );
     }
 
-    if (content.length > 5000) {
+    if (content && content.length > 5000) {
       return NextResponse.json(
         { error: "Message content cannot exceed 5000 characters" },
+        { status: 400 }
+      );
+    }
+
+    // Validate media
+    if (mediaUrl && !mediaType) {
+      return NextResponse.json(
+        { error: "Media type is required when media URL is provided" },
+        { status: 400 }
+      );
+    }
+
+    if (mediaType && !["image", "video"].includes(mediaType)) {
+      return NextResponse.json(
+        { error: "Invalid media type. Must be 'image' or 'video'" },
         { status: 400 }
       );
     }
@@ -135,11 +151,13 @@ export async function POST(request: NextRequest) {
       conversationId: new mongoose.Types.ObjectId(conversationId),
       senderId: senderId ? new mongoose.Types.ObjectId(senderId) : null,
       senderRole,
-      content: content.trim(),
+      content: content ? content.trim() : (mediaType === "image" ? "📷 Photo" : mediaType === "video" ? "🎥 Video" : ""),
+      mediaType: mediaType || null,
+      mediaUrl: mediaUrl || null,
     });
 
     // Update conversation
-    const snippet = content.trim().substring(0, 100);
+    const snippet = content ? content.trim().substring(0, 100) : (mediaType === "image" ? "📷 Photo" : mediaType === "video" ? "🎥 Video" : "");
     conversation.lastMessageSnippet = snippet;
     conversation.lastMessageAt = new Date();
     conversation.updatedAt = new Date();
@@ -241,6 +259,8 @@ export async function POST(request: NextRequest) {
       senderId: message.senderId?.toString() || null,
       senderRole: message.senderRole,
       content: message.content,
+      mediaType: (message as any).mediaType || null,
+      mediaUrl: (message as any).mediaUrl || null,
       createdAt: message.createdAt,
       readAt: message.readAt || null,
     });

@@ -86,6 +86,16 @@ export default function AdminLayout({
                   >
                     Messages
                   </Link>
+                  <Link
+                    href="/admin/purchases"
+                    className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-medium text-sm sm:text-base transition-colors ${
+                      pathname === "/admin/purchases"
+                        ? "bg-rose text-white"
+                        : "text-brown hover:bg-brown/10"
+                    }`}
+                  >
+                    Purchases
+                  </Link>
                 </nav>
               )}
             </div>

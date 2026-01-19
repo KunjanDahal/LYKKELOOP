@@ -69,23 +69,13 @@ export default function Navbar() {
             <div className="flex items-center space-x-4 ml-4">
               {loading ? (
                 <div className="w-20 h-8 bg-beige rounded animate-pulse"></div>
-              ) : user ? (
-                <ProfileDropdown />
               ) : (
-                <>
-                  <Link
-                    href="/login"
-                    className="px-4 py-2 border-2 border-brown rounded-full text-brown hover:bg-brown hover:text-beige transition-colors font-medium"
-                  >
-                    Log in
-                  </Link>
-                  <Link
-                    href="/signup"
-                    className="px-4 py-2 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium"
-                  >
-                    Sign up
-                  </Link>
-                </>
+                <Link
+                  href="/name-login"
+                  className="px-4 py-2 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium"
+                >
+                  Enter Your Name
+                </Link>
               )}
             </div>
           </div>
@@ -142,22 +132,13 @@ export default function Navbar() {
                   <MobileLogoutButton onClose={() => setIsMenuOpen(false)} />
                 </>
               ) : (
-                <>
-                  <Link
-                    href="/login"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="px-4 py-2 border-2 border-brown rounded-full text-brown hover:bg-brown hover:text-beige transition-colors font-medium text-center"
-                  >
-                    Log in
-                  </Link>
-                  <Link
-                    href="/signup"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="px-4 py-2 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-center"
-                  >
-                    Sign up
-                  </Link>
-                </>
+                <Link
+                  href="/name-login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="px-4 py-2 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-center"
+                >
+                  Enter Your Name
+                </Link>
               )}
             </div>
           </div>

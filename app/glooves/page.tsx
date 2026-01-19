@@ -19,7 +19,7 @@ export default function GloovesPage() {
   // Redirect to login if not authenticated (only after auth check is complete)
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/login?redirect=/glooves");
+      router.push("/name-login?redirect=/glooves");
     }
   }, [user, authLoading, router]);
 

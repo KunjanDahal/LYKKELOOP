@@ -6,6 +6,8 @@ export interface IMessage {
   senderId?: mongoose.Types.ObjectId | null;
   senderRole: "user" | "admin";
   content: string;
+  mediaType?: "image" | "video" | null;
+  mediaUrl?: string | null;
   createdAt: Date;
   readAt: Date | null;
 }
@@ -32,6 +34,15 @@ const MessageSchema = new Schema<IMessage>(
       required: [true, "Message content is required"],
       trim: true,
       maxlength: [5000, "Message content cannot exceed 5000 characters"],
+    },
+    mediaType: {
+      type: String,
+      enum: ["image", "video"],
+      default: null,
+    },
+    mediaUrl: {
+      type: String,
+      default: null,
     },
     readAt: {
       type: Date,

@@ -83,6 +83,8 @@ export interface MessageResponse {
   senderId?: string | null;
   senderRole: "user" | "admin";
   content: string;
+  mediaType?: "image" | "video" | null;
+  mediaUrl?: string | null;
   createdAt: string;
   readAt: string | null;
 }

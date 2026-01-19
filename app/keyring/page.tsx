@@ -19,7 +19,7 @@ export default function KeyringPage() {
   // Redirect to login if not authenticated (only after auth check is complete)
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/login?redirect=/keyring");
+      router.push("/name-login?redirect=/keyring");
     }
   }, [user, authLoading, router]);
 

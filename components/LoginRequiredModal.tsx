@@ -69,27 +69,20 @@ export default function LoginRequiredModal({ onClose }: LoginRequiredModalProps)
 
           <div>
             <h2 className="text-2xl font-bold text-brown mb-2">
-              Log in to continue
+              Enter your name to continue
             </h2>
             <p className="text-brown/70">
-              You need a LykkeLoop account to purchase items.
+              We use name-only login so you can see your purchases and chat history.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+          <div className="flex flex-col gap-4 pt-4">
             <Link
-              href="/login"
+              href="/name-login"
               onClick={onClose}
-              className="flex-1 px-6 py-3 border-2 border-brown text-brown rounded-full hover:bg-brown hover:text-beige transition-colors font-medium text-center"
+              className="px-6 py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-center"
             >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
-              onClick={onClose}
-              className="flex-1 px-6 py-3 bg-rose text-white rounded-full hover:bg-rose/90 transition-colors font-medium text-center"
-            >
-              Sign up
+              Enter Your Name
             </Link>
           </div>
         </div>

@@ -42,9 +42,33 @@ export default function MessageBubble({ message, isOwnMessage }: MessageBubblePr
         }`}
         style={bubbleStyle}
       >
-        <p className="whitespace-pre-wrap break-words leading-relaxed">
-          {message.content}
-        </p>
+        {message.mediaUrl && (
+          <div className="mb-2 rounded-lg overflow-hidden">
+            {message.mediaType === "image" ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={message.mediaUrl}
+                alt="Shared image"
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: "300px" }}
+              />
+            ) : message.mediaType === "video" ? (
+              <video
+                src={message.mediaUrl}
+                controls
+                className="max-w-full h-auto rounded-lg"
+                style={{ maxHeight: "300px" }}
+              >
+                Your browser does not support the video tag.
+              </video>
+            ) : null}
+          </div>
+        )}
+        {message.content && (
+          <p className="whitespace-pre-wrap break-words leading-relaxed">
+            {message.content}
+          </p>
+        )}
         <span
           className={`mt-1 sm:mt-1.5 block text-[10px] sm:text-xs ${
             isOwnMessage

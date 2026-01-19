@@ -7,6 +7,7 @@ import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
 import { useToast } from "@/contexts/ToastContext";
 import { useChatState } from "@/contexts/ChatStateContext";
 import MessageBubble from "./MessageBubble";
+import { fileToBase64 } from "@/lib/imageUtils";
 
 interface ChatPopupProps {
   isOpen: boolean;
@@ -19,6 +20,9 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
   const [inputValue, setInputValue] = useState("");
   const [loading, setLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [selectedMedia, setSelectedMedia] = useState<{ type: "image" | "video"; url: string } | null>(null);
+  const [mediaFile, setMediaFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
   const { showToast } = useToast();
@@ -184,13 +188,57 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
     };
   }, [isOpen, conversationId]);
 
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    const isImage = file.type.startsWith("image/");
+    const isVideo = file.type.startsWith("video/");
+
+    if (!isImage && !isVideo) {
+      showToast("Please select an image or video file", "error");
+      return;
+    }
+
+    // Validate file size (20MB max)
+    const maxSize = 20 * 1024 * 1024; // 20MB
+    if (file.size > maxSize) {
+      showToast("File size must be less than 20MB", "error");
+      return;
+    }
+
+    try {
+      const base64 = await fileToBase64(file);
+      setSelectedMedia({ type: isImage ? "image" : "video", url: base64 });
+      setMediaFile(file);
+    } catch (error) {
+      showToast("Failed to process file", "error");
+    }
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveMedia = () => {
+    setSelectedMedia(null);
+    setMediaFile(null);
+  };
+
   const handleSend = async () => {
-    if (!inputValue.trim() || !conversationId || sending) {
+    if ((!inputValue.trim() && !selectedMedia) || !conversationId || sending) {
       return;
     }
 
     const content = inputValue.trim();
+    const mediaType = selectedMedia?.type;
+    const mediaUrl = selectedMedia?.url;
+    
     setInputValue("");
+    setSelectedMedia(null);
+    setMediaFile(null);
     setSending(true);
 
     try {
@@ -199,7 +247,9 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           conversationId,
-          content,
+          content: content || undefined,
+          mediaType: mediaType || undefined,
+          mediaUrl: mediaUrl || undefined,
         }),
         credentials: "include",
       });
@@ -229,6 +279,9 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
       console.error("Failed to send message:", error);
       showToast(error.message || "Failed to send message", "error");
       setInputValue(content); // Restore input on error
+      if (mediaType && mediaUrl) {
+        setSelectedMedia({ type: mediaType, url: mediaUrl });
+      }
     } finally {
       setSending(false);
     }
@@ -329,9 +382,57 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
             <div ref={messagesEndRef} />
           </div>
 
+          {/* Media Preview */}
+          {selectedMedia && (
+            <div className="px-3 sm:px-4 pt-2 border-t border-brown/10 flex-shrink-0">
+              <div className="relative inline-block">
+                {selectedMedia.type === "image" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={selectedMedia.url}
+                    alt="Preview"
+                    className="max-w-[200px] max-h-[200px] rounded-lg object-cover"
+                  />
+                ) : (
+                  <video
+                    src={selectedMedia.url}
+                    className="max-w-[200px] max-h-[200px] rounded-lg"
+                    controls
+                  />
+                )}
+                <button
+                  onClick={handleRemoveMedia}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                  aria-label="Remove media"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Input */}
           <div className="p-3 sm:p-4 border-t border-brown/10 flex-shrink-0">
             <div className="flex gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,video/*"
+                onChange={handleFileSelect}
+                className="hidden"
+                id="chat-media-input"
+              />
+              <label
+                htmlFor="chat-media-input"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base border border-brown/20 rounded-full hover:bg-brown/10 transition-colors cursor-pointer flex items-center justify-center"
+                title="Add photo or video"
+              >
+                <svg className="w-5 h-5 text-brown" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </label>
               <input
                 type="text"
                 value={inputValue}
@@ -343,7 +444,7 @@ export default function ChatPopup({ isOpen, onClose }: ChatPopupProps) {
               />
               <button
                 onClick={handleSend}
-                disabled={!inputValue.trim() || sending || !conversationId}
+                disabled={(!inputValue.trim() && !selectedMedia) || sending || !conversationId}
                 className="px-4 sm:px-6 py-2 text-sm sm:text-base bg-rose text-white rounded-full hover:bg-rose/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium flex-shrink-0"
               >
                 {sending ? "Sending..." : "Send"}

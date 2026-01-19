@@ -19,7 +19,7 @@ export default function CapPage() {
   // Redirect to login if not authenticated (only after auth check is complete)
   useEffect(() => {
     if (!authLoading && !user) {
-      router.push("/login?redirect=/cap");
+      router.push("/name-login?redirect=/cap");
     }
   }, [user, authLoading, router]);
 
