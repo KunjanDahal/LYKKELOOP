@@ -72,6 +72,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Name-only accounts do not have a passwordHash; they must use name-login.
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: "Invalid email or password" },
+        { status: 401 }
+      );
+    }
+
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
     if (!isPasswordValid) {
@@ -84,7 +92,7 @@ export async function POST(request: NextRequest) {
     // Generate JWT
     const token = generateToken({
       userId: user._id.toString(),
-      email: user.email,
+      email: user.email ?? email.toLowerCase().trim(),
     });
 
     // Create response
@@ -94,7 +102,7 @@ export async function POST(request: NextRequest) {
         user: {
           id: user._id.toString(),
           name: user.name,
-          email: user.email,
+          email: user.email ?? email.toLowerCase().trim(),
         },
       },
       { status: 200 }

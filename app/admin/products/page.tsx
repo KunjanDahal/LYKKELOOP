@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import Image from "next/image";
 import { useToast } from "@/contexts/ToastContext";
 import { ProductType } from "@/types";
 import { validateImageFiles, validateImageFile, MAX_FILE_SIZE, MIN_IMAGES, MAX_IMAGES } from "@/lib/imageUtils";
@@ -61,7 +62,7 @@ export default function AdminProductsPage() {
   const editFileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch products
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       setLoading(true);
       const response = await fetch("/api/admin/products");
@@ -77,11 +78,11 @@ export default function AdminProductsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [showToast]);
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [fetchProducts]);
 
   // Filter products by search term
   const filteredProducts = products.filter(
@@ -439,17 +440,18 @@ export default function AdminProductsPage() {
                   {filteredProducts.map((product) => (
                     <tr key={product._id} className="hover:bg-beige/30 transition-colors">
                       <td className="px-6 py-4">
-                        <img
+                        <Image
                           src={
                             product.images && product.images.length > 0
                               ? product.images[0]
-                              : product.imageUrl || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23f5f5dc' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%238B4513' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E"
+                              : product.imageUrl ||
+                                "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23f5f5dc' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%238B4513' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E"
                           }
                           alt={product.name}
+                          width={64}
+                          height={64}
                           className="w-16 h-16 object-cover rounded-lg"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23f5f5dc' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%238B4513' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E";
-                          }}
+                          unoptimized
                         />
                       </td>
                       <td className="px-6 py-4 text-brown font-medium">{product.name}</td>
@@ -482,17 +484,18 @@ export default function AdminProductsPage() {
               {filteredProducts.map((product) => (
                 <div key={product._id} className="p-4 hover:bg-beige/30 transition-colors">
                   <div className="flex gap-4">
-                    <img
+                    <Image
                       src={
                         product.images && product.images.length > 0
                           ? product.images[0]
-                          : product.imageUrl || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23f5f5dc' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%238B4513' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E"
+                          : product.imageUrl ||
+                            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23f5f5dc' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%238B4513' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E"
                       }
                       alt={product.name}
+                      width={96}
+                      height={96}
                       className="w-20 h-20 sm:w-24 sm:h-24 flex-shrink-0 object-cover rounded-lg"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Crect fill='%23f5f5dc' width='64' height='64'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%238B4513' font-size='12'%3ENo Image%3C/text%3E%3C/svg%3E";
-                      }}
+                      unoptimized
                     />
                     <div className="flex-1 min-w-0">
                       <h3 className="font-medium text-brown text-sm sm:text-base mb-1 truncate">{product.name}</h3>
@@ -618,10 +621,13 @@ export default function AdminProductsPage() {
                   <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3">
                     {addImagePreviews.map((preview, index) => (
                       <div key={index} className="relative group">
-                        <img
+                        <Image
                           src={preview}
                           alt={`Preview ${index + 1}`}
+                          width={400}
+                          height={256}
                           className="w-full h-32 object-cover rounded-lg border-2 border-brown/20"
+                          unoptimized
                         />
                         <button
                           type="button"
@@ -756,10 +762,13 @@ export default function AdminProductsPage() {
                     <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3">
                       {existingEditImages.map((image, index) => (
                         <div key={index} className="relative group">
-                          <img
+                          <Image
                             src={image}
                             alt={`Existing ${index + 1}`}
+                            width={400}
+                            height={256}
                             className="w-full h-32 object-cover rounded-lg border-2 border-brown/20"
+                            unoptimized
                           />
                           <button
                             type="button"
@@ -833,10 +842,13 @@ export default function AdminProductsPage() {
                     <div className="grid grid-cols-2 sm:grid-cols-2 gap-2 sm:gap-3">
                       {editImagePreviews.map((preview, index) => (
                         <div key={index} className="relative group">
-                          <img
+                          <Image
                             src={preview}
                             alt={`Preview ${index + 1}`}
+                            width={400}
+                            height={256}
                             className="w-full h-32 object-cover rounded-lg border-2 border-brown/20"
+                            unoptimized
                           />
                           <button
                             type="button"

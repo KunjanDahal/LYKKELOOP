@@ -6,7 +6,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "lykkeloop_secret_key_change_in_pro
 
 export interface JWTPayload {
   userId: string;
-  email: string;
+  email?: string;
 }
 
 export function generateToken(payload: JWTPayload): string {

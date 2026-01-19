@@ -56,6 +56,14 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
+    // Name-only accounts may not have a passwordHash yet.
+    if (!user.passwordHash) {
+      return NextResponse.json(
+        { error: "This account does not have a password set. Please use name login." },
+        { status: 400 }
+      );
+    }
+
     // Verify old password
     const isOldPasswordValid = await bcrypt.compare(oldPassword, user.passwordHash);
     if (!isOldPasswordValid) {

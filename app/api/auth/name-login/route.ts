@@ -22,7 +22,7 @@ export async function OPTIONS() {
 
 // Helper function to find or create user with name
 // If name exists, log in to existing account (no multiple accounts per name)
-async function findOrCreateUserWithName(baseName: string): Promise<typeof User> {
+async function findOrCreateUserWithName(baseName: string) {
   await connectDB();
   
   // Trim and clean the name
