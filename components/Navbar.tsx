@@ -18,6 +18,7 @@ export default function Navbar() {
     { href: "/cap", label: "Cap" },
     { href: "/glooves", label: "Glooves" },
     { href: "/keyring", label: "Keyring" },
+    { href: "/my-purchases", label: "My Purchases" },
   ];
 
   // Show only Home when not logged in, show all links when logged in

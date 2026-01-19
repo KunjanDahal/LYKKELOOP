@@ -62,6 +62,13 @@ export default function ProfileDropdown() {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-brown/10 py-2 z-50">
           <Link
+            href="/my-purchases"
+            onClick={() => setIsOpen(false)}
+            className="block px-4 py-2 text-brown hover:bg-beige transition-colors"
+          >
+            My Purchases
+          </Link>
+          <Link
             href="/profile"
             onClick={() => setIsOpen(false)}
             className="block px-4 py-2 text-brown hover:bg-beige transition-colors"
